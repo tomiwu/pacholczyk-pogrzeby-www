@@ -78,7 +78,8 @@ Later (backlog issue, no `Sandcastle` label): store form data in Supabase and no
 | D8 | TypeScript 6.0.3 (not 7.x) and ESLint 9.39.5 (not 10.x). | typescript-eslint 8.74.0 needs TypeScript below 6.1. eslint-plugin-jsx-a11y 6.10.2 supports ESLint up to 9. |
 | D9 | This repository is public, so GitHub branch protection is available without GitHub Pro. After the CI workflow is on `main`, the owner bot turns on required checks for the 8 job ids, with force-push off and direct pushes off. | Contrast with the private hotel repo, which got HTTP 403. |
 | D10 | The GitHub Pages deploy workflow is a separate issue with the label `needs-validation` and no `Sandcastle` label. CI never deploys by itself. | Preview is public. Tomasz must be able to hold it. |
-| D11 | The loop is not started in this phase. The container image is not built in this phase. Free disk on the box was about 7 GB on 2026-11-26 (Europe/Warsaw). Another loop already runs on the box. | project-blueprint A4.1. Disk must be checked again before any image build. |
+| D11 | The loop starts after A3.5 (PAT check). Do not do a fresh image build while disk is tight or while the hotel loop runs. | project-blueprint A4.1. |
+| D12 | Reuse the hotel loop image by tag only: `podman tag localhost/sandcastle:gosciniec-uniejow-www localhost/sandcastle:pacholczyk-pogrzeby-www`. Both names point to image ID `8521db767d8e` (1.86 GB). No extra disk. Tools checked on 2026-11-26 (Europe/Warsaw): Node.js v26.13.1, gh 2.106.0, Claude Code 2.1.332, Playwright Chromium 159.0.8154.6 (`/ms-playwright/chromium-1255`). The image also has PHP 8.2.36; this site does not use PHP. A dedicated image can be built later when disk allows. Never run podman reset, repair, prune, or image removal while the hotel loop runs. | Disk was about 6.5 GB free (95 % used). A full build would not be safe. |
 
 ## 6. Test decisions
 
@@ -90,7 +91,7 @@ Later (backlog issue, no `Sandcastle` label): store form data in Supabase and no
 
 ## 7. Limits and risks
 
-- Disk on the box: about 7.3 GB free at 16:34 Europe/Warsaw on 2026-11-26 (95 % used). Do not build the loop image until there is a safe margin. Do not run `podman` reset or repair, and do not remove images, while another loop runs.
+- Disk on the box: about 6.5 GB free at 17:00 Europe/Warsaw on 2026-11-26 (95 % used). The loop image is a tag on the hotel image (D12). Do not run `podman` reset, repair or prune, and do not remove images, while another loop runs.
 - A hotel-site loop is already on the box (pid file `/tmp/gosciniec-www-loop.pid`). Only one image build at a time.
 - The loop agent has an idle timeout. Issues contain exact tool versions, so the agent does not search the web.
 - Kody: about 2500 fetches per week. Cron expressions are in UTC.
@@ -104,12 +105,12 @@ Later (backlog issue, no `Sandcastle` label): store form data in Supabase and no
 ## 8. Open items
 
 1. Confirm or reject the e-mail address `jpacholczyk@o2.pl` (D5). Until then, do not publish it.
-2. Fine-grained PAT for this repository (PS3). The owner bot will ask Tomasz later with a masked field. Do not start the loop before the PAT is in `.sandcastle/.env`.
-3. Production domain and DNS. None until Tomasz gives the words to proceed.
-4. Scene 2, 3 and 4 painted assets (light and dark). Specs are in the scene-assets issue. The owner bot may generate them outside the loop. The loop must not invent stand-in photographs.
-5. `LOOP_WEBHOOK_URL` for the later "pacholczyk-www: loop events" routine. The sender key already exists on the box. The URL comes when the routine is created (not in this phase).
-6. Legal pages (terms, privacy) if they are needed at launch. Not in the current issue list.
-7. Google Business Profile entries for the two offices. Out of scope for the site build.
+2. Production domain and DNS. None until Tomasz gives the words to proceed.
+3. Scene 2, 3 and 4 painted assets (light and dark). Specs are in the scene-assets issue. The owner bot may generate them outside the loop. The loop must not invent stand-in photographs.
+4. Legal pages (terms, privacy) if they are needed at launch. Not in the current issue list.
+5. Google Business Profile entries for the two offices. Out of scope for the site build.
+
+Resolved on 2026-11-26 (Europe/Warsaw): the fine-grained PAT is in place on the box (A3.5). The "pacholczyk-www: loop events" webhook URL and sender key are in `/workspace/pacholczyk-www-secrets/` and are loaded into the orchestrator only.
 
 ## 9. Glossary
 
