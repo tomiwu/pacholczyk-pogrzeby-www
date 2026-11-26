@@ -1,0 +1,7 @@
+out
+.next
+.sandcastle
+package-lock.json
+.lighthouseci
+CLAUDE.md
+docs/PRD.md
