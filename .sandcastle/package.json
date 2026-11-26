@@ -1,0 +1,14 @@
+{
+  "name": "pacholczyk-pogrzeby-www-sandcastle",
+  "private": true,
+  "type": "module",
+  "description": "Host-side Sandcastle loop. Separate from the site package.json.",
+  "scripts": {
+    "loop": "tsx main.mts",
+    "test:loop": "tsx loop-policy-test.mts"
+  },
+  "devDependencies": {
+    "@ai-hero/sandcastle": "0.12.0",
+    "tsx": "4.23.15"
+  }
+}

@@ -1,0 +1,41 @@
+# Sandcastle image for pacholczyk-pogrzeby-www.
+# Tag: localhost/sandcastle:pacholczyk-pogrzeby-www
+# Contains every CI tool: Node LTS, git, gh, Claude Code, Playwright Chromium (+ system deps).
+# Lighthouse CI uses the same Chromium (CHROME_PATH).
+# This site has no PHP. Do not install php-cli.
+# Do not build this image while another loop image is building.
+# Check free disk first. The box was tight (about 7 GB free) on 2026-11-26.
+FROM docker.io/library/node:26-bookworm-slim
+
+RUN apt-get -o Acquire::Retries=5 update && apt-get install -y --no-install-recommends \
+  git curl jq ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+# GitHub CLI
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+  | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+  > /etc/apt/sources.list.d/github-cli.list \
+  && apt-get -o Acquire::Retries=5 update && apt-get install -y --no-install-recommends gh \
+  && rm -rf /var/lib/apt/lists/*
+
+# Playwright Chromium in a shared path. The version must match @playwright/test in package.json.
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+ARG PLAYWRIGHT_VERSION=1.65.1
+RUN npx -y playwright@${PLAYWRIGHT_VERSION} install --with-deps chromium \
+  && rm -rf /var/lib/apt/lists/* /root/.npm \
+  && chmod -R a+rX /ms-playwright \
+  && ln -s "$(ls -d /ms-playwright/chromium-*/chrome-linux*/chrome | head -1)" /usr/local/bin/chromium
+ENV CHROME_PATH=/usr/local/bin/chromium
+
+# Claude Code CLI (the loop agent)
+ARG CLAUDE_CODE_VERSION=2.1.332
+RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION} && rm -rf /root/.npm
+
+ARG AGENT_UID=1000
+ARG AGENT_GID=1000
+RUN groupmod -o -g $AGENT_GID node && usermod -o -u $AGENT_UID -g $AGENT_GID -d /home/agent -m -l agent node \
+  && chmod -R a+rwX /home/agent && chmod 1777 /tmp
+USER ${AGENT_UID}:${AGENT_GID}
+WORKDIR /home/agent
+ENTRYPOINT ["sleep", "infinity"]
