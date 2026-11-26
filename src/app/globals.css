@@ -1,0 +1,29 @@
+/* Minimal reset. Design tokens and themes come in the layout issue. */
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  padding: 1.5rem;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+a {
+  text-decoration: underline;
+}
+
+a:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+
+address {
+  font-style: normal;
+}

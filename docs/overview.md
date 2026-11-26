@@ -7,6 +7,7 @@ src/app/              one page (App Router, static export) and the root layout
 src/components/       sticky phone button, theme toggle, scroll story, sections
 src/lib/nap.ts        name, two offices, two phones (single source)
 src/lib/schema/       JSON-LD builders (FuneralHome for each office, FAQPage)
+src/lib/preview.ts    PREVIEW_NOINDEX flag (preview policy)
 src/styles/           design tokens (Stone Olive / Candle Graphite)
 public/img/           painted scene layers, fresco layers, logo SVG
 public/fonts/         Fraunces and Nunito Sans (OFL), latin-ext
@@ -17,6 +18,6 @@ e2e/                  Playwright + axe tests
 docs/                 PRD and this overview
 ```
 
-Build: `npm run build` writes `out/` (HTML, CSS, JS, images, `robots.txt`, `sitemap.xml`).
+Build: `npm run build` writes `out/` (HTML, CSS, JS, images, `robots.txt`). `sitemap.xml` comes with the launch issue, together with the domain.
 Preview (later, issue with label `needs-validation`): GitHub Pages, `noindex` until launch.
 There is no production domain yet. Do not change DNS without Tomasz's words.
