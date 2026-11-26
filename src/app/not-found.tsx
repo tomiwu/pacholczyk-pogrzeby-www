@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { NAP } from "@/lib/nap";
+import { PhoneLinks } from "@/components/phone-links";
 
 export default function NotFound() {
   return (
@@ -9,14 +9,7 @@ export default function NotFound() {
       <p>
         <Link href="/">Strona główna</Link>
       </p>
-      <p>
-        {NAP.phones.map((phone, i) => (
-          <span key={phone.e164}>
-            {i > 0 ? " · " : null}
-            <a href={`tel:${phone.e164}`}>{phone.display}</a>
-          </span>
-        ))}
-      </p>
+      <PhoneLinks />
     </main>
   );
 }
